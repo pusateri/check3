@@ -1,32 +1,46 @@
-use printpdf::*;
+
 use std::fs::File;
 use std::io::BufWriter;
+use printpdf::*;
+use english_numbers::convert;
+use english_numbers::Formatting;
 
 
 fn main() {
-	let (doc, page1, layer1) = PdfDocument::new("BANK CHECK", Mm(216.0), Mm(279.0), "Layer 1");
-	let current_layer = doc.get_page(page1).get_layer(layer1);
+	
 
 	let bill_reference = "1";
 	let bill_date = "01/06/2020";
 	let payable_date = "01/06/2020";
-	let payable_to = "Payable To";
-	let payable_amount = "529.55";
-	let payable_amount_written = "Five hundred twenty-nine and 55/100*************************************";
+	let payable_to = "Recipient";
+	let payable_amount_float: f32 = 3678.98;
 	let payable_address1 = "Address Line 1";
 	let payable_address2 = "Address Line 2";
 	let account = "0391";
 	let check_number = "1900";
 
+	let payable_amount = format!("{:.2}", payable_amount_float);
+	let mut fmt = Formatting::all();
+	fmt.conjunctions = false;
+	
+	let payable_amount_int = payable_amount_float.trunc() as i64;
+	let payable_amount_english_int = convert(payable_amount_int, fmt);
+	let payable_amount_decimal = (payable_amount_float.fract() * 100.0).round();
+	let payable_amount_english_decimal = format!("{} and {}/100 ", payable_amount_english_int, payable_amount_decimal);
+	let padded_english = format!("{:*<100}", payable_amount_english_decimal);
+	let padded_amount = format!("{:*>8}", payable_amount);
+
+	// PDF initialization
+	let (doc, page1, layer1) = PdfDocument::new("BANK CHECK", Mm(216.0), Mm(279.0), "Layer 1");
+	let current_layer = doc.get_page(page1).get_layer(layer1);
 	let regular = doc.add_external_font(File::open("assets/fonts/Roboto-Regular.ttf").unwrap()).unwrap();
 	let bold = doc.add_external_font(File::open("assets/fonts/Roboto-Bold.ttf").unwrap()).unwrap();
 
 	// text, font size, x from left edge, y from top edge, font
 	current_layer.use_text(payable_date, 10, Mm(180.0), Mm(259.0), &regular);
 	current_layer.use_text(payable_to, 11, Mm(27.0), Mm(246.0), &regular);
-	current_layer.use_text("**", 10, Mm(179.0), Mm(246.0), &regular);
-	current_layer.use_text(payable_amount, 10, Mm(182.0), Mm(246.0), &regular);
-	current_layer.use_text(payable_amount_written, 10, Mm(9.8), Mm(237.2), &regular);
+	current_layer.use_text(padded_amount, 10, Mm(179.0), Mm(246.0), &regular);
+	current_layer.use_text(padded_english, 10, Mm(9.8), Mm(237.2), &regular);
 
 	// mailingaddress
 	current_layer.use_text(payable_to, 11, Mm(22.0), Mm(229.0), &regular);
@@ -44,7 +58,7 @@ fn main() {
 		current_layer.use_text("(", 11, Mm(36.0), Mm(*y), &bold);
 		current_layer.use_text(account, 11, Mm(38.0), Mm(*y), &bold);
 		current_layer.use_text(")", 11, Mm(47.0), Mm(*y), &bold);
-		current_layer.use_text(payable_amount, 11, Mm(193.5), Mm(*y), &regular);
+		current_layer.use_text(&payable_amount, 11, Mm(193.5), Mm(*y), &regular);
 	}
 
 	for y in vec![81.3, 174.2].iter() {
@@ -60,14 +74,14 @@ fn main() {
 		current_layer.use_text(bill_date, 11, Mm(12.0), Mm(*y), &regular);
 		current_layer.use_text("Bill", 11, Mm(39.3), Mm(*y), &regular);
 		current_layer.use_text(bill_reference, 11, Mm(62.0), Mm(*y), &regular);
-		current_layer.use_text(payable_amount, 11, Mm(126.5), Mm(*y), &regular);
-		current_layer.use_text(payable_amount, 11, Mm(154.0), Mm(*y), &regular);
-		current_layer.use_text(payable_amount, 11, Mm(193.5), Mm(*y), &regular);
+		current_layer.use_text(&payable_amount, 11, Mm(126.5), Mm(*y), &regular);
+		current_layer.use_text(&payable_amount, 11, Mm(154.0), Mm(*y), &regular);
+		current_layer.use_text(&payable_amount, 11, Mm(193.5), Mm(*y), &regular);
 	}
 
 	for y in vec![73.0, 166.5].iter() {
 		current_layer.use_text("Check Amount", 11, Mm(93.0), Mm(*y), &regular);
-		current_layer.use_text(payable_amount, 11, Mm(193.5), Mm(*y), &regular);
+		current_layer.use_text(&payable_amount, 11, Mm(193.5), Mm(*y), &regular);
 	}
 
 	doc.save(&mut BufWriter::new(File::create(format!("check{}.pdf", check_number)).unwrap())).unwrap();
