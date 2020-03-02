@@ -7,18 +7,18 @@ use english_numbers::Formatting;
 
 
 fn main() {
-	
-
+	// user input
 	let bill_reference = "1";
 	let bill_date = "01/06/2020";
 	let payable_date = "01/06/2020";
 	let payable_to = "Recipient";
-	let payable_amount_float: f32 = 3678.98;
+	let payable_amount_float: f32 = 3678.01;
 	let payable_address1 = "Address Line 1";
 	let payable_address2 = "Address Line 2";
 	let account = "0391";
 	let check_number = "1900";
 
+	// number formatting
 	let payable_amount = format!("{:.2}", payable_amount_float);
 	let mut fmt = Formatting::all();
 	fmt.conjunctions = false;
@@ -26,7 +26,7 @@ fn main() {
 	let payable_amount_int = payable_amount_float.trunc() as i64;
 	let payable_amount_english_int = convert(payable_amount_int, fmt);
 	let payable_amount_decimal = (payable_amount_float.fract() * 100.0).round();
-	let payable_amount_english_decimal = format!("{} and {}/100 ", payable_amount_english_int, payable_amount_decimal);
+	let payable_amount_english_decimal = format!("{} and {:02}/100 ", payable_amount_english_int, payable_amount_decimal);
 	let padded_english = format!("{:*<100}", payable_amount_english_decimal);
 	let padded_amount = format!("{:*>8}", payable_amount);
 
