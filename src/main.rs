@@ -36,10 +36,8 @@ fn main() {
     // PDF initialization
     let (doc, page1, layer1) = PdfDocument::new("BANK CHECK", Mm(216.0), Mm(279.0), "Layer 1");
     let current_layer = doc.get_page(page1).get_layer(layer1);
-    let regular = doc
-        .add_builtin_font(BuiltinFont::Helvetica).unwrap();
-    let bold = doc
-        .add_builtin_font(BuiltinFont::HelveticaBold).unwrap();
+    let regular = doc.add_builtin_font(BuiltinFont::Helvetica).unwrap();
+    let bold = doc.add_builtin_font(BuiltinFont::HelveticaBold).unwrap();
 
     // text, font size, x from left edge, y from top edge, font
     current_layer.use_text(payable_date, 10, Mm(180.0), Mm(259.0), &regular);

@@ -3,13 +3,13 @@ Generate PDF of 3-part business top check, one per US Letter page. QuickBooks-co
 
 ## Inputs
 
-1.  Bill reference #
-2.  Bill Date
-3.  Payed Date
-4.  Payed To
-5.  Payed Address Line 1
-6.  Payed Address Line 2
-7.  Payed Amount
+1.  Bill references list
+2.  Bill dates list
+3.  Bill amounts list
+4.  Payed date
+5.  Payed To
+6.  Payed Address Line 1
+7.  Payed Address Line 2
 8.  Last four digits of Checking account
 9.  Check number
 
