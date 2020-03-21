@@ -37,11 +37,9 @@ fn main() {
     let (doc, page1, layer1) = PdfDocument::new("BANK CHECK", Mm(216.0), Mm(279.0), "Layer 1");
     let current_layer = doc.get_page(page1).get_layer(layer1);
     let regular = doc
-        .add_external_font(File::open("assets/fonts/Roboto-Regular.ttf").unwrap())
-        .unwrap();
+        .add_builtin_font(BuiltinFont::Helvetica).unwrap();
     let bold = doc
-        .add_external_font(File::open("assets/fonts/Roboto-Bold.ttf").unwrap())
-        .unwrap();
+        .add_builtin_font(BuiltinFont::HelveticaBold).unwrap();
 
     // text, font size, x from left edge, y from top edge, font
     current_layer.use_text(payable_date, 10, Mm(180.0), Mm(259.0), &regular);
@@ -61,10 +59,10 @@ fn main() {
 
     for y in vec![14.0, 105.0].iter() {
         current_layer.use_text("Checking", 11, Mm(9.1), Mm(*y), &bold);
-        current_layer.use_text(account_last4, 11, Mm(26.0), Mm(*y), &bold);
-        current_layer.use_text("(", 11, Mm(36.0), Mm(*y), &bold);
-        current_layer.use_text(account_last4, 11, Mm(38.0), Mm(*y), &bold);
-        current_layer.use_text(")", 11, Mm(47.0), Mm(*y), &bold);
+        current_layer.use_text(account_last4, 11, Mm(27.0), Mm(*y), &bold);
+        current_layer.use_text("(", 11, Mm(37.0), Mm(*y), &bold);
+        current_layer.use_text(account_last4, 11, Mm(39.0), Mm(*y), &bold);
+        current_layer.use_text(")", 11, Mm(48.0), Mm(*y), &bold);
         current_layer.use_text(&right_adjusted_amount, 11, Mm(191.5), Mm(*y), &regular);
     }
 
