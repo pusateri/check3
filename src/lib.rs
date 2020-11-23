@@ -9,6 +9,7 @@
 use english_numbers::convert;
 use english_numbers::Formatting;
 use printpdf::*;
+use std::fs::File;
 
 #[derive(Debug)]
 pub struct Check3 {
@@ -18,7 +19,8 @@ pub struct Check3 {
     pub payable_date: String,
     pub payable_to: String,
     pub payable_address1: String,
-    pub payable_address2: String,
+    pub payable_address2: Option<String>,
+    pub payable_address3: String,
     pub acct_num_last4: String,
     pub number: String,
 }
@@ -51,8 +53,12 @@ impl Check3 {
             "Layer 1".to_string(),
         );
         let layer = doc.get_page(page1).get_layer(layer1);
-        let regular = doc.add_builtin_font(BuiltinFont::Helvetica).unwrap();
-        let bold = doc.add_builtin_font(BuiltinFont::HelveticaBold).unwrap();
+        let regular = doc
+            .add_external_font(File::open("assets/fonts/Roboto-Regular.ttf").unwrap())
+            .unwrap();
+        let bold = doc
+            .add_external_font(File::open("assets/fonts/Roboto-Bold.ttf").unwrap())
+            .unwrap();
 
         // text, font size, x from left edge, y from top edge, font
         layer.use_text(&check.payable_date, 10, Mm(180.0), Mm(259.0), &regular);
@@ -63,7 +69,12 @@ impl Check3 {
         // mailingaddress
         layer.use_text(&check.payable_to, 11, Mm(22.0), Mm(229.0), &regular);
         layer.use_text(&check.payable_address1, 11, Mm(22.0), Mm(225.0), &regular);
-        layer.use_text(&check.payable_address2, 11, Mm(22.0), Mm(221.0), &regular);
+        if let Some(addr2) = &check.payable_address2 {
+            layer.use_text(addr2, 11, Mm(22.0), Mm(221.0), &regular);
+            layer.use_text(&check.payable_address3, 11, Mm(22.0), Mm(217.0), &regular);
+        } else {
+            layer.use_text(&check.payable_address3, 11, Mm(22.0), Mm(221.0), &regular);
+        }
 
         for y in vec![87.2, 180.7].iter() {
             layer.use_text(&check.payable_date, 10, Mm(18.0), Mm(*y), &bold);
